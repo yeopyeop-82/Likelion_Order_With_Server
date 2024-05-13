@@ -56,35 +56,40 @@ function getUserInfo(accessToken) {
     });
 }
 
-function getOrderList(accessToken) {
-  return fetch(API_SERVER_DOMAIN + "/order/orders", {
+function getOrderDetail(accessToken, orderId) {
+  return fetch(API_SERVER_DOMAIN + `/order/${orderId}`, {
     method: "GET",
     headers: {
       Authorization: "Bearer " + accessToken,
     },
   }).then((response) => {
     if (!response.ok) {
-      throw new Error("Failed to fetch order list");
+      throw new Error("Failed to ferch Order");
     }
-    return response.json();
+    return response.json;
   });
 }
 
-function deleteOrder(accessToken, orderId) {
-  return fetch(API_SERVER_DOMAIN + `/order?id=${orderId}`, {
-    method: "DELETE",
+function updateOrder(accessToken, orderData) {
+  return fetch(API_SERVER_DOMAIN + "/order", {
+    method: "PUT",
     headers: {
       Authorization: "Bearer " + accessToken,
     },
   }).then((response) => {
     if (!response.ok) {
-      throw new Error("Failed to delete order");
+      throw new Error("Failed to update Order");
     }
+    return response.json;
   });
 }
 
 document.addEventListener("DOMContentLoaded", function () {
   // 페이지 로드 시 실행되는 코드
+
+  // URL에서 주문 ID를 가져오기
+  const urlParams = new URLSearchParams(window.location.search);
+  const orderId = urlParams.get("id");
 
   // 쿠키에서 accessToken 가져오기
   var accessToken = getCookie("accessToken");
@@ -99,6 +104,7 @@ document.addEventListener("DOMContentLoaded", function () {
           span.textContent = name;
           span.classList.remove("d-none");
         });
+        console.log(accessToken);
       })
       .catch((error) => {
         console.error("User info error:", error);
@@ -127,60 +133,37 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         }
       });
+  }
 
-    // 주문 목록 가져오기
-    getOrderList(accessToken)
-      .then((orders) => {
-        var orderContainer = document.getElementById("orderContainer");
+  getOrderDetail(accessToken, orderId)
+    .then((order) => {
+      var orderContainer = document.getElementById("orderContainer");
 
-        orders.forEach((order) => {
-          var card = document.createElement("div");
-          card.className = "col-xl-3 col-md-6 mb-4";
-          card.innerHTML = `
-            <div class="card border-left-primary shadow h-100 py-2">
-              <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                  <div class="col mr-2">
-                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                      주문 ID : <span>${order.id}</span>
-                    </div>
-                    <div class="h5 mb-0 font-weight-bold text-gray-800">
-                      <span>${order.name}</span>
-                      <span>(${order.price}원)</span>
-                      <span>${order.quantity}개</span>
-                      <span> / ${order.quantity * order.price}원</span>
-                    </div>
-                  </div>
-                  <div class="col-auto">
-                    <i class="fas fa-trash-alt delete-icon" style="color: red; cursor: pointer;"></i>
-                  </div>
-                </div>
+      var card = document.createElement("div");
+      card.className = "col-xl-3 col-md-6 mb-4";
+      card.innerHTML = `
+      <div class="card border-left-primary shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                주문 ID : <span>${order.id}</span>
+              </div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">
+                <span>${order.name}</span>
+                <span>(${order.price}원)</span>
+                <span>${order.quantity}개</span>
+                <span> / ${order.quantity * order.price}원</span>
               </div>
             </div>
-          `;
-          // 주문 삭제 이벤트 추가
-          var deleteIcon = card.querySelector(".delete-icon");
-          deleteIcon.addEventListener("click", function () {
-            var confirmDelete = confirm("정말 삭제하시겠습니까?");
-            if (confirmDelete) {
-              deleteOrder(accessToken, order.id)
-                .then(() => {
-                  // 삭제 성공 시 해당 카드를 제거
-                  card.remove();
-                })
-                .catch((error) => {
-                  console.error("Failed to delete order:", error);
-                });
-            }
-          });
-          card.addEventListener("click", function () {
-            window.location.href = `/orderDetail.html?id=${order.id}`;
-          });
-          orderContainer.appendChild(card);
-        });
-      })
-      .catch((error) => {
-        console.error("Failed to fetch order list:", error);
-      });
-  }
+          </div>
+        </div>
+      </div>
+    `;
+
+      orderContainer.appendChild(card);
+    })
+    .catch((error) => {
+      console.error("Failed to fetch order detail:", error);
+    });
 });

@@ -237,9 +237,7 @@
             <div
               class="d-sm-flex align-items-center justify-content-center mb-4"
             >
-              <h1 class="h3 mb-0 text-gray-800">
-                안녕하세요, <span class="user-name"></span> 님!
-              </h1>
+              <h1 class="h3 mb-0 text-gray-800">주문상세 / 수정하기</h1>
             </div>
 
             <!-- Content Row -->
@@ -252,18 +250,55 @@
                   <div
                     class="card-header py-3 d-flex flex-row align-items-center justify-content-center"
                   >
-                    <h6 class="m-0 font-weight-bold text-primary">주문목록</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">
+                      주문상세 / 수정하기
+                    </h6>
                   </div>
                   <!-- Card Body -->
                   <div class="card-body">
                     <div id="orderContainer" class="row"></div>
+                    <form id="editOrderForm">
+                      <div class="mb-3">
+                        <label for="editedProductName" class="form-label"
+                          >구매할 품목</label
+                        >
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="editedProductName"
+                          placeholder="구매할 품목"
+                        />
+                      </div>
+                      <div class="mb-3">
+                        <label for="editedQuantity" class="form-label"
+                          >양 (개 단위)</label
+                        >
+                        <input
+                          type="number"
+                          class="form-control"
+                          id="editedQuantity"
+                          placeholder="양 (개 단위)"
+                        />
+                      </div>
+                      <div class="mb-3">
+                        <label for="editedPrice" class="form-label">가격</label>
+                        <input
+                          type="number"
+                          class="form-control"
+                          id="editedPrice"
+                          placeholder="가격"
+                        />
+                      </div>
+                      <button type="submit" class="btn btn-primary">
+                        수정하기
+                      </button>
+                    </form>
                   </div>
                 </div>
-
-                <a href="order.html" class="btn btn-primary btn-user btn-block">
-                  주문하기
-                </a>
               </div>
+              <a href="index.html" class="btn btn-primary btn-user btn-block">
+                주문목록
+              </a>
             </div>
           </div>
           <!-- /.container-fluid -->
@@ -342,6 +377,6 @@
     <script src="vendor/chart.js/Chart.min.js"></script>
 
     <!-- Page level custom scripts -->
-    <script src="js/index.js"></script>
+    <script src="js/orderDetail.js"></script>
   </body>
 </html>
