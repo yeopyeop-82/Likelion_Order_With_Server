@@ -16,6 +16,23 @@ function getCookie(name) {
   return null;
 }
 
+function getAddress(accessToken) {
+  return fetch(API_SERVER_DOMAIN + "/user", {
+    method: "GET",
+    headers: {
+      Authorization: "Bearer " + accessToken,
+    },
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("User info request failed");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      return data.address;
+    });
+}
 function getAccessTokenWithRefreshToken(accessToken, refreshToken) {
   return fetch(API_SERVER_DOMAIN + "/auth/reissue", {
     method: "POST",
@@ -128,6 +145,14 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         }
       });
+
+    getAddress(accessToken).then((address) => {
+      var userAddressSpans = document.querySelectorAll(".user-address");
+      userAddressSpans.forEach((span) => {
+        span.textContent = address;
+        span.classList.remove("d-none");
+      });
+    });
 
     // 주문 목록 가져오기
     getOrderList(accessToken)
