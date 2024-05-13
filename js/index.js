@@ -84,6 +84,20 @@ function getOrder(accessToken, orderId) {
   });
 }
 
+function deleteOrder(accessToken, orderId) {
+  return fetch(API_SERVER_DOMAIN + `/order?id=${orderId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: "Bearer " + accessToken,
+    },
+  }).then((response) => {
+    if (!response.ok) {
+      throw new Error("Failed to delete order");
+    }
+    return response.json();
+  });
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   // 페이지 로드 시 실행되는 코드
 
@@ -132,30 +146,32 @@ document.addEventListener("DOMContentLoaded", function () {
     // 주문 목록 가져오기
     getOrderList(accessToken)
       .then((orders) => {
-        // 주문 목록을 처리하는 코드 추가
-        var orderTableBody = document.getElementById("orderTableBody");
-        var total = 0; // 총합계 초기값 설정
-        orders.forEach((order) => {
-          var row = document.createElement("tr");
-          var totalPrice = order.quantity * order.price; // TotalPrice 계산
-          total += totalPrice; // 총합계 계산
-          row.innerHTML = `
-        <td>${order.id}</td>
-        <td>${order.name}</td>
-        <td>${order.quantity}</td>
-        <td>${order.price}</td>
-        <td>${totalPrice}</td>
-      `;
-          orderTableBody.appendChild(row);
-        });
+        var orderContainer = document.getElementById("orderContainer");
 
-        // 총합계 및 TotalPrice를 마지막 열에 추가
-        var totalRow = document.createElement("tr");
-        totalRow.innerHTML = `
-      <td colspan="4">Total:</td>
-      <td>${total}</td>
-    `;
-        orderTableBody.appendChild(totalRow);
+        orders.forEach((order) => {
+          var card = document.createElement("div");
+          card.className = "col-xl-3 col-md-6 mb-4";
+          card.innerHTML = `
+        <div class="card border-left-primary shadow h-100 py-2">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                  주문 ID : <span>${order.id}</span>
+                </div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                  <span>${order.name}</span>
+                  <span>(${order.price}원)</span>
+                  <span>${order.quantity}개</span>
+                  <span> / ${order.quantity * order.price}원</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+          orderContainer.appendChild(card);
+        });
       })
       .catch((error) => {
         console.error("Failed to fetch order list:", error);
