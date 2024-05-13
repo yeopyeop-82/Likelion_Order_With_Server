@@ -11,7 +11,7 @@
     <meta name="author" content="" />
 
     <title>주문</title>
-    ∂
+
     <!-- Custom fonts for this template-->
     <link
       href="vendor/fontawesome-free/css/all.min.css"
@@ -320,30 +320,42 @@
                   <div
                     class="card-header py-3 d-flex flex-row align-items-center justify-content-center"
                   >
-                    <h6 class="m-0 font-weight-bold text-primary">주문목록</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">주문하기</h6>
                   </div>
                   <!-- Card Body -->
                   <div class="card-body">
-                    <div class="table-responsive">
-                      <table
-                        class="table table-bordered"
-                        id="orderTableBody"
-                        width="100%"
-                        cellspacing="0"
-                      >
-                        <thead>
-                          <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Quantity</th>
-                            <th>Price</th>
-                            <th>TotalPrice</th>
-                          </tr>
-                        </thead>
-
-                        <tbody></tbody>
-                      </table>
-                    </div>
+                    <form id="orderForm">
+                      <div class="form-group">
+                        <label for="productName">구매할 품목</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="productName"
+                          placeholder="구매할 품목"
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label for="quantity">양 (개 단위)</label>
+                        <input
+                          type="number"
+                          class="form-control"
+                          id="quantity"
+                          placeholder="양 (개 단위)"
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label for="price">가격</label>
+                        <input
+                          type="number"
+                          class="form-control"
+                          id="price"
+                          placeholder="가격"
+                        />
+                      </div>
+                      <button type="submit" class="btn btn-primary">
+                        주문하기
+                      </button>
+                    </form>
                   </div>
                 </div>
               </div>
@@ -394,7 +406,7 @@
               data-dismiss="modal"
               aria-label="Close"
             >
-              <span aria-hidden="true">×</span>
+              <span aria-hidden="true"></span>
             </button>
           </div>
           <div class="modal-body">

@@ -73,32 +73,28 @@ function getUserInfo(accessToken) {
     });
 }
 
-function getOrderList(accessToken) {
-  return fetch(API_SERVER_DOMAIN + "/order/orders", {
-    method: "GET",
+function createOrder(accessToken, orderData) {
+  return fetch(API_SERVER_DOMAIN + "/order", {
+    method: "POST",
     headers: {
+      "Content-Type": "application/json",
       Authorization: "Bearer " + accessToken,
     },
-  }).then((response) => {
-    if (!response.ok) {
-      throw new Error("Failed to fetch order list");
-    }
-    return response.json();
-  });
-}
-
-function getOrder(accessToken, orderId) {
-  return fetch(API_SERVER_DOMAIN + `/order/${orderId}`, {
-    method: "GET",
-    headers: {
-      Authorization: "Bearer " + accessToken,
-    },
-  }).then((response) => {
-    if (!response.ok) {
-      throw new Error("Failed to ferch Order");
-    }
-    return response.json;
-  });
+    body: JSON.stringify(orderData),
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Failed to create order");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      return data; // 생성된 주문 정보 반환
+    })
+    .catch((error) => {
+      console.error("Failed to create order:", error);
+      throw error;
+    });
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -117,6 +113,7 @@ document.addEventListener("DOMContentLoaded", function () {
           span.textContent = name;
           span.classList.remove("d-none");
         });
+        console.log(accessToken);
       })
       .catch((error) => {
         console.error("User info error:", error);
@@ -153,37 +150,44 @@ document.addEventListener("DOMContentLoaded", function () {
         span.classList.remove("d-none");
       });
     });
-
-    // 주문 목록 가져오기
-    getOrderList(accessToken)
-      .then((orders) => {
-        // 주문 목록을 처리하는 코드 추가
-        var orderTableBody = document.getElementById("orderTableBody");
-        var total = 0; // 총합계 초기값 설정
-        orders.forEach((order) => {
-          var row = document.createElement("tr");
-          var totalPrice = order.quantity * order.price; // TotalPrice 계산
-          total += totalPrice; // 총합계 계산
-          row.innerHTML = `
-        <td>${order.id}</td>
-        <td>${order.name}</td>
-        <td>${order.quantity}</td>
-        <td>${order.price}</td>
-        <td>${totalPrice}</td>
-      `;
-          orderTableBody.appendChild(row);
-        });
-
-        // 총합계 및 TotalPrice를 마지막 열에 추가
-        var totalRow = document.createElement("tr");
-        totalRow.innerHTML = `
-      <td colspan="4">Total:</td>
-      <td>${total}</td>
-    `;
-        orderTableBody.appendChild(totalRow);
-      })
-      .catch((error) => {
-        console.error("Failed to fetch order list:", error);
-      });
   }
 });
+
+document
+  .getElementById("orderForm")
+  .addEventListener("submit", function (event) {
+    event.preventDefault(); // 기본 제출 동작 막기
+
+    // 쿠키에서 accessToken 가져오기
+    var accessToken = getCookie("accessToken");
+    var refreshToken = getCookie("refreshToken");
+
+    // 폼에서 값 가져오기
+    var productName = document.getElementById("productName").value;
+    var quantity = document.getElementById("quantity").value;
+    var price = document.getElementById("price").value;
+
+    // 주문 데이터 만들기
+    var orderData = [
+      {
+        name: productName,
+        quantity: parseInt(quantity),
+        price: parseFloat(price),
+      },
+    ];
+
+    if (accessToken) {
+      createOrder(accessToken, orderData)
+        .then((createdOrder) => {
+          console.log("주문이 성공적으로 생성되었습니다:", createdOrder);
+          alert(
+            "주문이 성공적으로 생성되었습니다:\n\n" +
+              JSON.stringify(createdOrder, null, 2)
+          );
+        })
+        .catch((error) => {
+          console.error("주문 생성 실패:", error);
+          alert("주문 생성에 실패했습니다. 다시 시도해주세요.");
+        });
+    }
+  });
