@@ -94,7 +94,6 @@ function deleteOrder(accessToken, orderId) {
     if (!response.ok) {
       throw new Error("Failed to delete order");
     }
-    return response.json();
   });
 }
 
@@ -152,24 +151,42 @@ document.addEventListener("DOMContentLoaded", function () {
           var card = document.createElement("div");
           card.className = "col-xl-3 col-md-6 mb-4";
           card.innerHTML = `
-        <div class="card border-left-primary shadow h-100 py-2">
-          <div class="card-body">
-            <div class="row no-gutters align-items-center">
-              <div class="col mr-2">
-                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                  주문 ID : <span>${order.id}</span>
-                </div>
-                <div class="h5 mb-0 font-weight-bold text-gray-800">
-                  <span>${order.name}</span>
-                  <span>(${order.price}원)</span>
-                  <span>${order.quantity}개</span>
-                  <span> / ${order.quantity * order.price}원</span>
+            <div class="card border-left-primary shadow h-100 py-2">
+              <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                  <div class="col mr-2">
+                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                      주문 ID : <span>${order.id}</span>
+                    </div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                      <span>${order.name}</span>
+                      <span>(${order.price}원)</span>
+                      <span>${order.quantity}개</span>
+                      <span> / ${order.quantity * order.price}원</span>
+                    </div>
+                  </div>
+                  <div class="col-auto">
+                    <i class="fas fa-trash-alt delete-icon" style="color: red; cursor: pointer;"></i>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      `;
+          `;
+          // 주문 삭제 이벤트 추가
+          var deleteIcon = card.querySelector(".delete-icon");
+          deleteIcon.addEventListener("click", function () {
+            var confirmDelete = confirm("정말 삭제하시겠습니까?");
+            if (confirmDelete) {
+              deleteOrder(accessToken, order.id)
+                .then(() => {
+                  // 삭제 성공 시 해당 카드를 제거
+                  card.remove();
+                })
+                .catch((error) => {
+                  console.error("Failed to delete order:", error);
+                });
+            }
+          });
           orderContainer.appendChild(card);
         });
       })
